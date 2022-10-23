@@ -1,10 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AuthContext } from "../../contexts/UserContext";
 import LeftSideNav from "./LeftSideNav";
 
 const Navbar = () => {
   const [navbar, setNavbar] = useState(false);
+  const {user,userSignOut} = useContext(AuthContext);
+
+  const handleLogOut = () => {
+    // console.log("User logged Out");
+    userSignOut()
+    .then(()=> {
+      toast.success("User Logged out")
+    })
+    .catch((error) => {
+      toast.error(error.message)
+    })
+
+  }
   return (
     <nav className="w-full bg-purple-500 shadow">
       <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
@@ -73,24 +88,19 @@ const Navbar = () => {
             </ul>
 
             <div className="mt-3 space-y-2 lg:hidden md:inline-block">
-              <Link
-                to="/login"
-                className="inline-block w-full px-4 py-2 text-center text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
-              >
-                Sign in
-              </Link>
-              <Link
-                to="/register"
-                className="inline-block w-full px-4 py-2 text-center text-gray-800 bg-white rounded-md shadow hover:bg-gray-100"
-              >
-                Sign up
-              </Link>
-              <LeftSideNav className=''></LeftSideNav>
-            </div>
-            
-          </div>
-        </div>
-        <div className="hidden space-x-2 md:inline-block">
+            {
+          user?.email ? 
+          <>
+          <Link 
+            className="md:hidden px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
+            onClick={handleLogOut}
+          >
+            Sign Out
+          </Link>
+          </>
+          : 
+          <>
+          <div className="hidden space-x-2 md:inline-block">
           <Link
             to="/login"
             className="px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
@@ -104,6 +114,41 @@ const Navbar = () => {
             Sign up
           </Link>
         </div>
+        </>
+        }
+              <LeftSideNav className=''></LeftSideNav>
+            </div>
+            
+          </div>
+        </div>
+        {
+          user?.email ? 
+          <>
+          <Link 
+            className="hidden md:inline-block px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
+            onClick={handleLogOut}
+          >
+            Sign Out
+          </Link>
+          </>
+          : 
+          <>
+          <div className="hidden space-x-2 md:inline-block">
+          <Link
+            to="/login"
+            className="px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
+          >
+            Sign in
+          </Link>
+          <Link
+            to="/register"
+            className="px-4 py-2 text-gray-800 bg-white rounded-md shadow hover:bg-gray-100"
+          >
+            Sign up
+          </Link>
+        </div>
+        </>
+        }
       </div>
     </nav>
   );
